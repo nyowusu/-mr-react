@@ -15,3 +15,9 @@
   .card-container:hover {
     transform: scale(1.05);
   }
+
+  .card-container h1 {
+    color: black;
+    font-size: 25px;
+    font-family: 'sans';
+  }

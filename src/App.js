@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {CardList} from './components/card-list/card-list.component';
+import {SearchBox} from './components/search-box/search-box.component';
 import './App.css';
 
 class App extends Component {
@@ -11,13 +12,26 @@ class App extends Component {
       monsters: [],
       searchField: "",
     }
+
+  }
+
+  myAsyncFetchUser = async () => {
+    try {
+        const usersResponse = await fetch("https://jsonplaceholder.typicode.com/users");
+        const users = await usersResponse.json();
+        this.setState({monsters: users});
+    } catch (error) {
+        console.log(`Unable to fetch users: ${error}`) 
+    }
   }
 
   componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then(response => response.json())
-      .then(users => this.setState({monsters: users}))
-      .catch(error => console.log("I have errored"));
+    // fetch("https://jsonplaceholder.typicode.com/users")
+    //   .then(response => response.json())
+    //   .then(users => this.setState({monsters: users}))
+    //   .catch(error => console.log("I have errored"));
+    // or use
+    this.myAsyncFetchUser();
   }
 
   componentDidUpdate() {
@@ -25,9 +39,9 @@ class App extends Component {
   }
 
   filterMonsters = () => {
-    this.state.monsters.filter(monster => {
-        return monster.name.includes(this.state.searchField);
-    });
+    this.state.monsters.filter(monster => 
+        monster.name.toLowerCase().includes(this.state.searchField.toLowerCase())
+    );
   }
 
   handleChange = (e) => {
@@ -36,19 +50,15 @@ class App extends Component {
 
   render () {
 
-    const {monsters, searchField} = this.state;
+    const {searchField} = this.state;
 
-    const filteredMonsters = searchField ? 
-                            this.state.monsters.filter(
-                                  monster => monster.name.toLowerCase().includes(searchField.toLowerCase()))
-                            : monsters 
+    const filteredMonsters =  this.state.monsters.filter(
+                                  monster => monster.name.toLowerCase().includes(searchField.toLowerCase())); 
     
     return (
       <div className="App">
-        <input 
-              type='text' 
-              placeholder="search monsters" 
-              onChange={this.handleChange}/>
+        <h1>Monsters Rolodex</h1>
+        <SearchBox placeholder="search monsters" handleChange={this.handleChange} />
         <CardList monsters={filteredMonsters} seachCard={this.state.searchField}  />
       </div>
     );
